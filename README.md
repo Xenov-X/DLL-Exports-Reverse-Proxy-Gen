@@ -10,7 +10,8 @@ This tool will identify all exported functions within the target DLL, and genera
 
 ## How to use the tool?
 - Have dumpbin.exe in PATH. 
-This is a
+*This is a
+  *s
 
 
 ## License
