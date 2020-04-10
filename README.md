@@ -20,7 +20,7 @@ This tool will identify all exported functions within the target DLL, and genera
 
 Default output location is to ./dllname_fwd.h
 
-####Additional flags
+#### Additional flags (optional)
 "-o Output dir"
 
 #### Example
