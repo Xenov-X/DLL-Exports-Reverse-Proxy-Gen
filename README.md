@@ -9,9 +9,15 @@ The technique of linking DLLs with "#pragma comment" is nothing new, but while e
 This tool will identify all exported functions within the target DLL, and generate a correctly formed header file to be used in your custom DLL. Included in the repository is a sample .cpp file for a very simple calc.exe PoC DLL. 
 
 ## How to use the tool?
-- Have dumpbin.exe in PATH. 
-* This is a
-  * s
+### Requirements
+* Have dumpbin.exe in PATH. 
+  * This is a component of visual studio, and due to licencing restrictions cannot be packaged with this tool. Default loaction is: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\dumpbin.exe"
+* Python 2
+
+### Usage
+> python tool <Path_to_dll>
+
+> Python tool "C:\Windows\System32\ncrypt.dll"
 
 
 ## License
