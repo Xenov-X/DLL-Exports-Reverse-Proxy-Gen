@@ -15,9 +15,16 @@ This tool will identify all exported functions within the target DLL, and genera
 * Python 2
 
 ### Usage
-> python tool <Path_to_dll>
+> python DLL_Rev_Proxy_Gen.py <Path_to_dll>
 
-> Python tool "C:\Windows\System32\ncrypt.dll"
+Default output location is to ./dllname_fwd.h
+
+####Additional flags
+"-o Output dir"
+
+#### Example
+> Python DLL_Rev_Proxy_Gen.py "C:\Windows\System32\ncrypt.dll"
+> Output to: ./ncrypt_fwd.h
 
 
 ## License
