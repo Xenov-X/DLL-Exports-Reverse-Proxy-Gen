@@ -1,10 +1,10 @@
 # DLL reverse proxy generator (a.k.a DLL exports forward generator)
-##DLL Hijacking
+## DLL Hijacking
 > For when dumping a correctly named DLL in the correct location for execution just isn't going to cut it.
 
 So you've found an application with an insecure search path, but the DLL that you can hijack is critical for functionality. What if your DLL could forward the applications requests to the legitimate target DLL maintaining all functionality AND run your code? 
 
-The technique of linking DLLs with "#pragma comment" is nothing new, but while experimenting, I found there wasn't a tool which would generate the list of export functions quickly and easily. i forked a tool from 2007, which looked like it used to work, and have updated it to work with the latest dumpbin.exe included in visual studio. 
+The technique of linking DLLs with "#pragma comment" is nothing new, but while experimenting, I found there wasn't a tool which would generate a formatted list of exported functions quickly and easily. I forked a tool from 2007, which looked like it used to work, updated it to work with the latest dumpbin.exe included in visual studio, and ensured that it handles escaping backslashes correctly in the output header file. 
 
 This tool will identify all exported functions within the target DLL, and generate a correctly formed header file to be used in your custom DLL. Included in the repository is a sample .cpp file for a very simple calc.exe PoC DLL. 
 
