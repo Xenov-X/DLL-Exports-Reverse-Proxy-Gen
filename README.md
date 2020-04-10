@@ -24,8 +24,9 @@ Default output location is to ./dllname_fwd.h
 "-o Output dir"
 
 #### Example
-> Python DLL_Rev_Proxy_Gen.py "C:\Windows\System32\ncrypt.dll"
-> \Output to: ./ncrypt_fwd.h
+> Python DLL_Rev_Proxy_Gen.py "C:\Windows\System32\ncrypt.dll"  
+
+> Output to: ./ncrypt_fwd.h
 
 
 ## License
