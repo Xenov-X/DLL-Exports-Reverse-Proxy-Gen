@@ -28,7 +28,7 @@ if __name__=="__main__":
 
     #~ Usage string.
     usageStr = """
-    make_pragmas.py -o [output dir] [source DLL name]
+    DLL_Rev_Proxy_Gen.py -o [output dir] [source DLL name]
 
 Where:
     source DLL name is the name of the DLL
@@ -36,9 +36,9 @@ Where:
 
 
 Example:
-    C:\\>python make_pragmas.py gdi32
+    C:\\>python DLL_Rev_Proxy_Gen.py 'C:\windows\system32\ncrypt.dll'
 
-    Generates a 'gdi32_fwd.h' in the current directory.
+    Generates a 'ncrypt_fwd.h' in the current directory.
 """
 
     #~ Create options.
