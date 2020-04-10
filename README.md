@@ -9,7 +9,8 @@ The technique of linking DLLs with "#pragma comment" is nothing new, but while e
 This tool will identify all exported functions within the target DLL, and generate a correctly formed header file to be used in your custom DLL. Included in the repository is a sample .cpp file for a very simple calc.exe PoC DLL. 
 
 ## How to use the tool?
-You'll need 
+- Have dumpbin.exe in PATH. 
+This is a
 
 
 ## License
