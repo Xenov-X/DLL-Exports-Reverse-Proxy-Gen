@@ -10,9 +10,10 @@ This tool will identify all exported functions within the target DLL, and genera
 
 ## How to use the tool?
 ### Requirements
-* Have dumpbin.exe in PATH. 
-  * This is a component of visual studio, and due to licencing restrictions cannot be packaged with this tool. Default loaction is: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\dumpbin.exe"
 * Python 2
+* Have dumpbin.exe in PATH. 
+  * This is a component of visual studio, and due to licencing restrictions cannot be packaged with this tool. Default location is: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\dumpbin.exe"
+
 
 ### Usage
 > python DLL_Rev_Proxy_Gen.py <Path_to_dll>
