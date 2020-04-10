@@ -1,18 +1,19 @@
 # DLL reverse proxy generator (a.k.a DLL exports forward generator)
-##DLL Hijacking
+## DLL Hijacking
 > For when dumping a correctly named DLL in the correct location for execution just isn't going to cut it.
 
 So you've found an application with an insecure search path, but the DLL that you can hijack is critical for functionality. What if your DLL could forward the applications requests to the legitimate target DLL maintaining all functionality AND run your code? 
 
-The technique of linking DLLs with "#pragma comment" is nothing new, but while experimenting, I found there wasn't a tool which would generate the list of export functions quickly and easily. i forked a tool from 2007, which looked like it used to work, and have updated it to work with the latest dumpbin.exe included in visual studio. 
+The technique of linking DLLs with "#pragma comment" is nothing new, but while experimenting, I found there wasn't a tool which would generate a formatted list of exported functions quickly and easily. I forked a tool from 2007, which looked like it used to work, updated it to work with the latest dumpbin.exe included in visual studio, and ensured that it handles escaping backslashes correctly in the output header file. 
 
 This tool will identify all exported functions within the target DLL, and generate a correctly formed header file to be used in your custom DLL. Included in the repository is a sample .cpp file for a very simple calc.exe PoC DLL. 
 
 ## How to use the tool?
 ### Requirements
-* Have dumpbin.exe in PATH. 
-  * This is a component of visual studio, and due to licencing restrictions cannot be packaged with this tool. Default loaction is: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\dumpbin.exe"
 * Python 2
+* Have dumpbin.exe in PATH. 
+  * This is a component of visual studio, and due to licencing restrictions cannot be packaged with this tool. Default location is: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\bin\Hostx64\x64\dumpbin.exe"
+
 
 ### Usage
 > python DLL_Rev_Proxy_Gen.py <Path_to_dll>
