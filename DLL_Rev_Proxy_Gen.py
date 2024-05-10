@@ -1,126 +1,68 @@
 """
-This script generates a function forwarding header
-for proxy DLL generation.
+DLL Reverse Proxy Generator.
 
+This script generates a function forwarding header for proxy DLL generation.
 It is expected that DUMPBIN.EXE is in the path.
-
 Forked from https://www.codeproject.com/Articles/17863/Using-Pragmas-to-Create-a-Proxy-DLL by Aaron Dobie, KPMG
+Updates added by ZephrFish, updated to Python3, added functions to streamline things and updated readme to reflect
 """
-import logging as l
-import optparse
+
+import logging
+import argparse
 import os
-import os.path
-import re
-import popen2
-import string
+import subprocess
 import sys
-import re
 
-#~ int main( int, char ** )
-if __name__=="__main__":
-    #~ Check Python version.
-    version = string.split( string.split( sys.version )[0], "." )
-    if map(int, version) > [ 2, 3 ]:
-        #~ Set logging configuration.
-        l.basicConfig( level = l.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%d-%b-%y %H:%M:%S' )
-    else:
-        l.basicConfig()
+def setup_logging():
+    """ Set up the logging configuration. """
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
-    #~ Usage string.
-    usageStr = """
-    DLL_Rev_Proxy_Gen.py -o [output dir] [source DLL name]
+def parse_arguments():
+    """ Parse command line arguments. """
+    parser = argparse.ArgumentParser(description="DLL Reverse Proxy Generator")
+    parser.add_argument("-o", "--output-dir", dest="odir", default=".", metavar="DIR", help="Specify output directory.")
+    parser.add_argument("dll_names", nargs='+', help="DLL(s) to process.")
+    return parser.parse_args()
 
-Where:
-    source DLL name is the name of the DLL
-    where the exports are extracted from
+def generate_proxy_header(dll_path, output_dir):
+    """ Generate proxy header from the DLL specified. """
+    base_name = os.path.splitext(os.path.split(dll_path)[1])[0]
+    output_name = os.path.join(output_dir, f"{base_name}_fwd.h")
 
+    logging.info(f"Processing '{dll_path}'.")
+    logging.info(f"Generating '{output_name}'.")
 
-Example:
-    C:\\>python DLL_Rev_Proxy_Gen.py 'C:\windows\system32\ncrypt.dll'
+    with open(output_name, "w") as f_out:
+        # Run dumpbin and process output.
+        process = subprocess.Popen(f"dumpbin -exports {dll_path}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout, stderr = process.communicate()
 
-    Generates a 'ncrypt_fwd.h' in the current directory.
-"""
+        if stderr:
+            logging.error(stderr)
 
-    #~ Create options.
-    parser = optparse.OptionParser( usage=usageStr, version="%prog v1.1")
-    parser.add_option( "-o",
-                       "--output-dir",
-                       dest="odir",
-                       default=".",
-                       metavar="DIR",
-                       help="Specify output directory." )
-    ( options, args ) = parser.parse_args()
-
-    #~ Sanity check.
-    if len( args ) < 1:
-        parser.parse_args( ['-h'] )
-
-    #~ Process input.
-    for inputDLL in args:
-        #~ Generate basename for output file.
-        baseName = os.path.splitext( os.path.split( inputDLL )[1] )[0]
-        
-		#~Get file path in correct format
-	EscapedPath = repr(inputDLL)	
-	EscapedNoQuotes = EscapedPath.replace("'", "")
-		
-        #~ Generate output file's name.
-        outputName = "%s/%s_fwd.h"%( options.odir, baseName )
-		
-		#Parsing DLL path
-	l.info( "Parsing DLL Path" )
-	#~l.info( inputDLL )
-	#~l.info( EscapedPath )
-	l.info( EscapedNoQuotes )
-		
-				
-        #~ Print some info.
-        l.info( "Processing '%s'."%inputDLL )
-        l.info( "Generating '%s'."%outputName )
-
-        #~ Open output file for writing.
-        try:
-            fOut = open( outputName, "w" )
-        except IOError, ( err, str ):
-            l.error( "Error: %s ( errno %d )."%( str, err ) )
-            continue
-
-        #~ Set initial state flag.
         permission = False
-
-        #~ Run dumpbin.
-        ( coe, cin ) = popen2.popen4( "dumpbin -exports " + inputDLL )
-        loopBaseName = ""
-        for line in coe:
-            loopBaseName = baseName
+        for line in stdout.splitlines():
             line = line.strip()
-            if len( line ) is 0:
-                continue
-            if line.lower().find( "fatal error" ) > -1:
-                l.error( line )
-            if line.lower().startswith( "ordinal" ):
+            if line.lower().startswith("ordinal"):
                 permission = True
                 continue
-            if line.lower().startswith( "summary" ):
+            if line.lower().startswith("summary"):
                 permission = False
-            if permission:
-                srcExport = ""
-                #~ Already forwarded?
-                if line.lower().find( "forwarded to " ) > -1:
-                    try:
-                        srcExport = line.split()[2]
-                    except:
-                        l.warning( "Line '%s...' failed."%line.strip()[0:60] )
-                        continue
-                else:
-                    #~ Export it.
-                    try:
-                        srcExport = line.split()[-1].replace( ")", "" )
-                    except:
-                        l.warning( "Line '%s' failed."%line.strip() )
-                        continue
-                fOut.write( '#pragma comment(linker, "/export:%s=%s.%s")\n'%( srcExport, EscapedNoQuotes, srcExport ) )
-        fOut.close()
-	
-    #~ All done.
-    l.info( "All done, Go Hijack those DLLs" )
+            if permission and "forwarded to " not in line.lower():
+                try:
+                    src_export = line.split()[-1].replace(")", "")
+                    f_out.write(f'#pragma comment(linker, "/export:{src_export}={dll_path}.{src_export}")\n')
+                except IndexError:
+                    logging.warning(f"Failed to process line: {line}")
+
+def main():
+    setup_logging()
+    args = parse_arguments()
+
+    for dll_name in args.dll_names:
+        generate_proxy_header(dll_name, args.odir)
+
+    logging.info("All done, go hijack those DLLs.")
+
+if __name__ == "__main__":
+    main()
